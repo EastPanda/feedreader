@@ -1,7 +1,7 @@
 from app import app
 from db import db 
-from models import articles
-from models import source 
+from models import article, source
+from routes import route
 
 with app.app_context():
     db.create_all()

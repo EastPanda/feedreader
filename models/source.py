@@ -1,14 +1,27 @@
-import datetime
+# source_module.py
 from db import db
+import datetime
 
-
-class feed(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    link = db.Column(db.Text, nullable = False)
-    feed = db.Column(db.Text, nullable = False)
-    title = db.Column(db.Text, nullable = False)
-    subtitle = db.Column(db.Text, nullable = False)
+class Source(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    link = db.Column(db.Text, nullable=False)  
+    feed = db.Column(db.Text, nullable=False)  
+    title = db.Column(db.Text, nullable=False)  
+    subtitle = db.Column(db.Text, nullable=False)  
     date_added = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    
 
- 
+    @classmethod
+    def insert_from_feed(cls, feed, feed_source):
+        link = feed_source['link']
+        title = feed_source['title']
+        subtitle = feed_source['subtitle']
+       
+        # Check if the source already exists
+        existing_source = cls.query.filter_by(link=link).first()
+        if existing_source:
+            return existing_source
+
+        source = Source(feed=feed, link=link, title=title, subtitle=subtitle)
+        db.session.add(source)
+        db.session.commit()
+        return source
